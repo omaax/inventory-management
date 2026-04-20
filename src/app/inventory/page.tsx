@@ -1,36 +1,37 @@
 "use client";
 
-import { useGetProductQuery } from "@/state/api";
+import { useGetProductsQuery } from "@/state/api";
 import Header from "@/app/(components)/Header/page";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 const columns: GridColDef[] = [
-  { field: "ProductId", headerName: "ID", width: 90 },
-  { field: "name", headerName: "Product Name", width: 200 },
+  { field: "productId", headerName: "ID", width: 200 },
+  { field: "name", headerName: "Product Name", width: 150 },
   {
     field: "price",
     headerName: "Price",
-    width: 110,
+    width: 150,
     type: "number",
     valueGetter: (value, row) => `$${row.price}`,
   },
   {
     field: "rating",
     headerName: "Rating",
-    width: 110,
+    description: "Product Rating.",
+    width: 210,
     type: "number",
     valueGetter: (value, row) => (row.rating ? row.rating : "N/A"),
   },
   {
     field: "stockQuantity",
     headerName: "Stock Quantity",
-    width: 150,
+    width: 250,
     type: "number",
   },
 ];
 
 const Inventory = () => {
-  const { data: products, isError, isLoading } = useGetProductQuery();
+  const { data: products, isError, isLoading } = useGetProductsQuery();
 
   if (isLoading) {
     return <div className="py-4">Loading...</div>;
@@ -45,7 +46,7 @@ const Inventory = () => {
   }
 
   return (
-    <div className="">
+    <div className="flex flex-col">
       <Header name="Inventory" />
       <DataGrid
         rows={products}
