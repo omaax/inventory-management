@@ -3,6 +3,8 @@
 import { useGetProductsQuery } from "@/state/api";
 import Header from "@/app/(components)/Header/page";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useAppSelector } from "../redux";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 const columns: GridColDef[] = [
   { field: "productId", headerName: "ID", width: 200 },
@@ -33,6 +35,14 @@ const columns: GridColDef[] = [
 const Inventory = () => {
   const { data: products, isError, isLoading } = useGetProductsQuery();
 
+  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+
+  const muiTheme = createTheme({
+    palette: {
+      mode: isDarkMode ? "dark" : "light",
+    },
+  });
+
   if (isLoading) {
     return <div className="py-4">Loading...</div>;
   }
@@ -48,13 +58,15 @@ const Inventory = () => {
   return (
     <div className="flex flex-col">
       <Header name="Inventory" />
-      <DataGrid
-        rows={products}
-        columns={columns}
-        getRowId={(row) => row.productId}
-        checkboxSelection
-        className="bg-white shadow rounded-lg border border-gray-200 mt-5 text-gray-700"
-      />
+      <ThemeProvider theme={muiTheme}>
+        <DataGrid
+          rows={products}
+          columns={columns}
+          getRowId={(row) => row.productId}
+          checkboxSelection
+          className="bg-white shadow rounded-lg border border-gray-200 mt-5 !text-gray-700"
+        />
+      </ThemeProvider>
     </div>
   );
 };

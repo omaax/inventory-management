@@ -3,6 +3,8 @@
 import { useGetUsersQuery } from "@/state/api";
 import Header from "@/app/(components)/Header/page";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { createTheme, ThemeProvider } from "@mui/material";
+import { useAppSelector } from "@/app/redux";
 
 const columns: GridColDef[] = [
   { field: "userId", headerName: "ID", width: 150 },
@@ -13,10 +15,15 @@ const columns: GridColDef[] = [
 const Users = () => {
   const { data: users, isError, isLoading } = useGetUsersQuery();
 
-  if (isLoading) {
-    return <div className="py-4">Loading...</div>;
-  }
+  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
+  const muiTheme = createTheme({
+    palette: {
+      mode: isDarkMode ? "dark" : "light",
+    },
+  });
+
+  if (isLoading) return <div className="py-4">Loading...</div>;
   if (isError || !users) {
     return (
       <div className="text-center text-red-500 py-4">Failed to fetch users</div>
@@ -26,13 +33,15 @@ const Users = () => {
   return (
     <div className="flex flex-col">
       <Header name="Users" />
-      <DataGrid
-        rows={users}
-        columns={columns}
-        getRowId={(row) => row.userId}
-        checkboxSelection
-        className="bg-white shadow rounded-lg border border-gray-200 mt-5 text-gray-700"
-      />
+      <ThemeProvider theme={muiTheme}>
+        <DataGrid
+          rows={users}
+          columns={columns}
+          getRowId={(row) => row.userId}
+          checkboxSelection
+          className="shadow rounded-lg border border-gray-200 mt-5"
+        />
+      </ThemeProvider>
     </div>
   );
 };

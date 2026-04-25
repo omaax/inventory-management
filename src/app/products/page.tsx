@@ -2,10 +2,11 @@
 
 import { useCreateProductMutation, useGetProductsQuery } from "@/state/api";
 import { PlusCircle, SearchIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/app/(components)/Header/page";
 import Rating from "@/app/(components)/Rating/page";
 import CreateProductModal from "./CreateProductModal";
+import Image from "next/image";
 
 type ProductFormData = {
   name: string;
@@ -17,12 +18,21 @@ type ProductFormData = {
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   const {
     data: products,
     isError,
     isLoading,
-  } = useGetProductsQuery(searchTerm);
+  } = useGetProductsQuery(debouncedSearch);
 
   const [createProduct] = useCreateProductMutation();
   const handleCreateProduct = async (productData: ProductFormData) => {
@@ -36,7 +46,7 @@ const Products = () => {
   if (isError) {
     return (
       <div className="text-center text-red-500 py-4">
-        Failded to fetch products
+        Failed to fetch products
       </div>
     );
   }
@@ -46,7 +56,7 @@ const Products = () => {
       {/* SEARCH BAR */}
       <div className="mb-6">
         <div className="flex items-center border-2 border-gray-200 rounded">
-          <SearchIcon className="w-5 h-5 text-gray-200 m-2" />
+          <SearchIcon className="w-5 h-5 text-gray-400 m-2" />
           <input
             className="w-full py-2 px-4 rounded bg-white"
             placeholder="Search Products..."
@@ -67,7 +77,7 @@ const Products = () => {
         </button>
       </div>
       {/* BODY PRODUCTS LIST */}
-      <div className="grid grid-cols-1 sm:grid-cols2 lg:grid-cols-4 gap-10 justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 justify-between">
         {isLoading ? (
           <div className="">Loading...</div>
         ) : (
@@ -77,7 +87,15 @@ const Products = () => {
               className="border shadow rounded-md p-4 max-w-full mx-auto w-full"
             >
               <div className="flex flex-col items-center">
-                img
+                <Image
+                  src={
+                    "https://images.unsplash.com/photo-1776798973362-c985f57c08e5?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  }
+                  alt={product.name}
+                  width={150}
+                  height={150}
+                  className="mb-3 rounded-2xl w-36 h-36"
+                />
                 <h3 className="text-lg text-gray-900 font-semibold">
                   {product.name}
                 </h3>

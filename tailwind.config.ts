@@ -40,17 +40,9 @@ const generateThemeObject = (colors: any, mapping: any, invert = false) => {
 
 const lightTheme = generateThemeObject(colors, shadeMapping);
 const darkTheme = generateThemeObject(colors, shadeMapping, true);
-
 const themes = {
-  light: {
-    ...lightTheme,
-    white: "#ffffff",
-  },
-  dark: {
-    ...darkTheme,
-    white: colors.gray["950"],
-    black: colors.gray["50"],
-  },
+  light: { ...lightTheme, white: "#ffffff" },
+  dark: { ...darkTheme, white: colors.gray["950"], black: colors.gray["50"] },
 };
 
 const config: Config = {
